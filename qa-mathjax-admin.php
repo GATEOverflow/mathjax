@@ -14,7 +14,7 @@ class qa_mathjax_admin {
   MathJax.Hub.Config({
 
     tex2jax: {
-      inlineMath: [ [\'$\',\'$\'], ["\\(","\\)"] ],
+      inlineMath: [ [\'$\',\'$\'], ["\\\\(","\\\\)"] ],
      config: ["MMLorHTML.js"],
       jax: ["input/TeX"],
       processEscapes: true
