@@ -94,19 +94,6 @@ automatic: true
 				'type' => 'text',
 				);
 		$fields[] = array(
-				'label' => 'No. of Previous Days to Query searches',
-				'tags' => 'NAME="qa-topsearch-plugin-interval-days"',
-				'value' => qa_opt('qa-topsearch-plugin-interval-days'),
-				'type' => 'text',
-				);
-		$fields[] = array(
-				'label' => 'Search Type',
-				'tags' => 'NAME="qa-topsearch-plugin-param"',
-				'value' => qa_opt('qa-topsearch-plugin-param'),
-				'type' => 'select',
-				'options' => array('search'=> 'search','tagsearch'=> 'tagsearch'),
-				);
-		$fields[] = array(
 				'label' => 'Enable MathJax',
 				'tags' => 'NAME="qa-mathjax-enable"',
 				'value' => qa_opt('qa-mathjax-enable'),
