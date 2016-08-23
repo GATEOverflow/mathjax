@@ -75,7 +75,7 @@ automatic: true
 
 
 		$fields[] = array(
-				'label' => '<a href="http://docs.mathjax.org/en/latest/configuration.html>MathJax Configuration</a>',
+				'label' => '<a href="http://docs.mathjax.org/en/latest/configuration.html">MathJax Configuration</a>',
 				'tags' => 'NAME="qa-mathjax-config"',
 				'value' => qa_opt('qa-mathjax-config'),
 				'type' => 'textarea',
