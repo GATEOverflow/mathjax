@@ -7,9 +7,9 @@
 			exit;
 	}
 	
-	qa_register_plugin_layer('qa-mathjax-layer.php', 'Mathjax Layer');	
+	qa_register_plugin_layer('qa-formatter-layer.php', 'Formatter Layer');	
 	
-	qa_register_plugin_module('module', 'qa-mathjax-admin.php', 'qa_mathjax_admin', 'MathJax Admin');
+	qa_register_plugin_module('module', 'qa-formatter-admin.php', 'qa_formatter_admin', 'Formatter Admin');
 
 /*
 	Omit PHP closing tag to help avoid accidental output
