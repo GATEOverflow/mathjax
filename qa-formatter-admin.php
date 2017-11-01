@@ -9,6 +9,8 @@ class qa_formatter_admin {
 	function option_default($option) {
 
 		switch($option) {
+		case 'qa-formatter-css':
+				return file_get_contents(dirname(__FILE__).'custom.css');
 		case 'qa-mathjax-config':
 				return '
   MathJax.Hub.Config({
@@ -78,6 +80,13 @@ automatic: true
 		$fields = array();
 
 
+		$fields[] = array(
+				'label' => 'Custom CSS for Content Formatting',
+				'tags' => 'NAME="formatter-css"',
+				'value' => qa_opt('qa-formatter-css'),
+				'type' => 'textarea',
+				'rows' => 20
+				);
 		$fields[] = array(
 				'label' => '<a href="http://docs.mathjax.org/en/latest/configuration.html">MathJax Configuration</a>',
 				'tags' => 'NAME="qa-mathjax-config"',

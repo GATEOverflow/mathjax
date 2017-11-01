@@ -95,6 +95,7 @@ border-top:2px dashed #def; border-bottom:2px dashed #def; padding-top:10px; mar
 .'</style>');
 			}
 
+		$this->output('<style type="text/css">'.qa_opt('qa-formatter-css').'</style>');
 	}
 }
 ?>
