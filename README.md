@@ -5,7 +5,9 @@ This plugin provides an option to add MathJax script, Prettify script and a Prev
 
 For editor support please use this [modified ckeditor](https://github.com/tangruize/q2a-formatter/releases).
 
-Download the ckeditor and place inside qa-plugin/wysiwyg-editor folder. 
+Download the ckeditor and place inside qa-plugin/wysiwyg-editor folder.
+
+It seems that SnowFlat theme renders math font very small for mobile. [SnowLight](https://github.com/gurjyot/SnowLight) theme doesn't have this problem.
 
 I also recommend you to install [q2apro-warn-on-leave](https://github.com/q2apro/q2apro-warn-on-leave) plugin, which warns the user that text area has been changed when he is leaving.
 
