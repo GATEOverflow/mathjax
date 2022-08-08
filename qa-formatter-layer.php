@@ -11,6 +11,7 @@ class qa_html_theme_layer extends qa_html_theme_base {
 
 		$preview	 ='document.addEventListener("DOMContentLoaded", function (f){
 
+
 			if("undefined"!=typeof CKEDITOR&&null!=CKEDITOR)
 			{
 				CKEDITOR.on("instanceLoaded",
@@ -22,7 +23,13 @@ class qa_html_theme_layer extends qa_html_theme_base {
 						e.editor.on("change",function(){document.getElementById("qa-cke-prev").innerHTML=e.editor.getData();';
 						if(qa_opt('qa-mathjax-enable'))
 						{
-							$preview .= 'MathJax.Hub.Queue([\'Typeset\', MathJax.Hub, "qa-cke-prev"]);';
+						$preview .= '
+typeset(() => {
+  const math = document.querySelector("#qa-cke-prev");
+  return [math];
+});
+
+';
 						}
 						if(qa_opt('qa-prettify-enable'))
 						{
@@ -35,7 +42,13 @@ class qa_html_theme_layer extends qa_html_theme_base {
 						m.innerHTML=e.editor.getData(true);';
 						if(qa_opt('qa-mathjax-enable'))
 						{
-							$preview .= 'MathJax.Hub.Queue([\'Typeset\', MathJax.Hub, "qa-cke-prev"]);';
+						$preview .= '
+							typeset(() => {
+  const math = document.querySelector("#qa-cke-prev");
+  return [math];
+});
+';
+
 						}
 						if(qa_opt('qa-prettify-enable'))
 						{
@@ -53,10 +66,9 @@ class qa_html_theme_layer extends qa_html_theme_base {
 		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin");
 		if(in_array($this->template, $allowed_templates))
 		{
-			if(qa_opt("qa-mathjax-enable") && qa_opt('qa-mathjax-config') && qa_opt('qa-mathjax-url'))
+			if(qa_opt("qa-mathjax-enable") && qa_opt('qa-mathjax-config'))
 			{
-				$this->output('<script  type="text/x-mathjax-config">'. qa_opt('qa-mathjax-config').'</script>');
-				$this->output('<script defer async type="text/javascript" src="'.qa_opt('qa-mathjax-url').'"></script>');
+				$this->output(qa_opt('qa-mathjax-config'));
 			}
 			if(qa_opt("qa-prettify-enable") && (!qa_opt("qa-ckepreview-enable")))// || ($this->template !== 'ask')))
 			{

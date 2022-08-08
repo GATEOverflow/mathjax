@@ -13,23 +13,16 @@ class qa_formatter_admin {
 				return file_get_contents(dirname(__FILE__).'/custom.css');
 		case 'qa-mathjax-config':
 				return '
-  MathJax.Hub.Config({
-
-    tex2jax: {
-      inlineMath: [ [\'$\',\'$\'], ["\\\\(","\\\\)"] ],
-     config: ["MMLorHTML.js"],
-      jax: ["input/TeX"],
-      processEscapes: true
-    }
-  });
-
-MathJax.Hub.Config({
-"HTML-CSS": {
-linebreaks: {
-automatic: true
-}
-}
-  });
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    processEscapes: true
+  }
+};
+</script>
+<script id="MathJax-script" async
+ src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 				';
 			case 'qa-mathjax-url':
