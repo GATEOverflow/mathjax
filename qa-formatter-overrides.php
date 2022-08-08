@@ -40,7 +40,9 @@ function qa_shorten_string_line($string,$length=0, $ellipsis = ' ... ')
 		$prefix = '';
 		$suffix = '';
 		$prefixdollar = 0; $suffixdollar = 0;
-		
+
+		$sslashon = $stexton = $stextmode = false;
+		$pslashon = $ptexton = $ptextmode = false;
 		for ($addword = 0; $addword < $stringwords; $addword++) {
 			$tosuffix = $addword % 3 == 1; // order: prefix, suffix, prefix, prefix, suffix, prefix, ...
 
@@ -49,7 +51,7 @@ function qa_shorten_string_line($string,$length=0, $ellipsis = ' ... ')
 			$wordLength = qa_strlen($word);
 			if(($word == '$') && ($wordLength <= $remaining))
 			{
-				if($tosuffix)
+				if($tosuffix && !$stextmode)
 				{
 					if($suffixdollar == 0)$suffixtemp = $suffix;
 					$suffixdollar++;
@@ -59,13 +61,78 @@ function qa_shorten_string_line($string,$length=0, $ellipsis = ' ... ')
 					}
 
 				}
-				else
+				else if(!$ptextmode)
 				{
 					if($prefixdollar == 0)$prefixtemp = $prefix;
 					$prefixdollar++;
 					if(($prefixdollar%2) == 0)
 					{
 						$prefixtemp = $prefix.$word;
+					}
+				}
+			}
+			if($tosuffix) {
+				if($suffixdollar%2) {
+					if($stextmode && $word == "}") {
+						$stextmode = false;
+					}
+					if($stexton && trim($word)) {
+						if($word == "{") {
+							$stextmode = true;
+						}
+						else {
+							$stextmode = false;
+						}
+						$stexton = false;
+					}
+					if($sslashon && trim($word)) {
+						if( $word == "text") {
+							$stexton = true;
+						}
+						else  {
+							$sslashon = false;
+							$stexton = false;
+						}
+						$sslason = false;
+					}
+					if($sslashon && $word == "text") {
+						$stexton = true;
+						$sslashon = false;
+					}
+					if ($word == "\\") {
+						$sslashon = true;
+					}
+				}
+			}
+			else {
+				if($prefixdollar%2) {
+					if($ptextmode && $word == "}") {
+						$ptextmode = false;
+					}
+					if($ptexton && trim($word)) {
+						if($word == "{") {
+							$ptextmode = true;
+						}
+						else {
+							$ptextmode = false;
+						}
+						$ptexton = false;
+					}
+					if($pslashon && trim($word)) {
+						if( $word == "text") {
+							$ptexton = true;
+						}
+						else {
+							$ptexton = false;
+						}
+						$pslason = false;
+					}
+					if($pslashon && $word == "text") {
+						$ptexton = true;
+						$pslashon = false;
+					}
+					if ($word == "\\") {
+						$pslashon = true;
 					}
 				}
 			}
