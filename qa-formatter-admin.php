@@ -10,7 +10,7 @@ class qa_formatter_admin {
 
 		switch($option) {
 		case 'qa-formatter-css':
-				return file_get_contents(dirname(__FILE__).'custom.css');
+				return file_get_contents(dirname(__FILE__).'/custom.css');
 		case 'qa-mathjax-config':
 				return '
   MathJax.Hub.Config({
@@ -33,7 +33,7 @@ automatic: true
 
 				';
 			case 'qa-mathjax-url':
-				return 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+				return 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
 			case 'qa-prettify-url':
 				return 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
 			case 'qa-mathjax-enable':
@@ -67,7 +67,7 @@ automatic: true
 
 			$ok = qa_lang('admin/options_saved');
 		}
-		else if (qa_clicked('mathjax-reset-button')) {
+		else if (qa_clicked('formatter-reset-button')) {
 			foreach($_POST as $i => $v) {
 				$def = $this->option_default($i);
 				if($def !== null) qa_opt($i,$def);
@@ -82,7 +82,7 @@ automatic: true
 
 		$fields[] = array(
 				'label' => 'Custom CSS for Content Formatting',
-				'tags' => 'NAME="formatter-css"',
+				'tags' => 'NAME="qa-formatter-css"',
 				'value' => qa_opt('qa-formatter-css'),
 				'type' => 'textarea',
 				'rows' => 20

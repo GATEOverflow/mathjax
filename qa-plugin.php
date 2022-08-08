@@ -8,6 +8,7 @@
 	}
 	
 	qa_register_plugin_layer('qa-formatter-layer.php', 'Formatter Layer');	
+	qa_register_plugin_overrides('qa-formatter-overrides.php', 'Formatter Overrides');	
 	
 	qa_register_plugin_module('module', 'qa-formatter-admin.php', 'qa_formatter_admin', 'Formatter Admin');
 
