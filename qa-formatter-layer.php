@@ -50,7 +50,7 @@ class qa_html_theme_layer extends qa_html_theme_base {
 	{
 
 		qa_html_theme_base::body_suffix();
-		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search","user-list", "qa");
+		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin");
 		if(in_array($this->template, $allowed_templates))
 		{
 			if(qa_opt("qa-mathjax-enable") && qa_opt('qa-mathjax-config') && qa_opt('qa-mathjax-url'))
@@ -80,7 +80,7 @@ class qa_html_theme_layer extends qa_html_theme_base {
 	{
 
 		qa_html_theme_base::head_custom();
-		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa");
+		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin");
 		if(in_array($this->template, $allowed_templates))
 		{
 		if(qa_opt("qa-ckepreview-enable") && qa_opt("qa-prettify-enable"))
