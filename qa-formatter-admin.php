@@ -16,7 +16,7 @@ class qa_formatter_admin {
 <script>
 MathJax = {
   tex: {
-    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    inlineMath: [ ["$","$"], ["\\(","\\)"] ],
     processEscapes: true
   }
 };
