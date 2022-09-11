@@ -63,7 +63,7 @@ typeset(() => {
 	{
 
 		qa_html_theme_base::body_suffix();
-		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin");
+		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list', 'qp-quickedit-page');
 		if(in_array($this->template, $allowed_templates))
 		{
 			if(qa_opt("qa-mathjax-enable") && qa_opt('qa-mathjax-config'))
@@ -92,13 +92,13 @@ typeset(() => {
 	{
 
 		qa_html_theme_base::head_custom();
-		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin");
+		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list', 'qp-quickedit-page');
 		if(in_array($this->template, $allowed_templates))
 		{
 		if(qa_opt("qa-ckepreview-enable") && qa_opt("qa-prettify-enable"))
 		{
 			$version = $this->get_pf_version();
-			$this->output('<link rel="stylesheet" defer type="text/css" href="'.QA_HTML_THEME_LAYER_URLTOROOT.'pf/prettify.css?v='.$version.'">');
+			//$this->output('<link rel="stylesheet" defer async type="text/css" href="'.QA_HTML_THEME_LAYER_URLTOROOT.'pf/prettify.css?v='.$version.'">');
 		}
 			if(qa_opt("qa-ckepreview-enable"))
 			{

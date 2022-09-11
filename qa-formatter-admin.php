@@ -88,12 +88,6 @@ MathJax = {
 				'rows' => 20
 				);
 		$fields[] = array(
-				'label' => 'MathJax URL',
-				'tags' => 'NAME="qa-mathjax-url"',
-				'value' => qa_opt('qa-mathjax-url'),
-				'type' => 'text',
-				);
-		$fields[] = array(
 				'label' => 'Prettify URL',
 				'tags' => 'NAME="qa-prettify-url"',
 				'value' => qa_opt('qa-prettify-url'),
