@@ -31,6 +31,7 @@ function qa_shorten_string_line($string,$length=0, $ellipsis = ' ... ')
 {
 	global $counter;
 	$string = strtr($string, "\r\n\t", '   ');
+	//return $string;
 	$string = str_replace("$$", "$", $string);
 	if (qa_strlen($string) > $length) {
 		$remaining = $length - qa_strlen($ellipsis);
