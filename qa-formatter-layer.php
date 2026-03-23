@@ -63,7 +63,7 @@ typeset(() => {
 	{
 
 		qa_html_theme_base::body_suffix();
-		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list', 'qp-quickedit-page');
+		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list', 'qp-quickedit-page', 'category');
 		if(in_array($this->template, $allowed_templates))
 		{
 			if(qa_opt("qa-mathjax-enable") && qa_opt('qa-mathjax-config'))
