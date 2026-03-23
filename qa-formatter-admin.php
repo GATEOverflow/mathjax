@@ -1,5 +1,22 @@
 <?php
 class qa_formatter_admin {
+	private function codecogsEndpointOptions() {
+		return array(
+			'png.image' => 'PNG (png.image)',
+			'svg.image' => 'SVG (svg.image)',
+		);
+	}
+
+	private function normalizeCodecogsEndpoint($value) {
+		$value = qa_strtolower(trim((string)$value));
+		$options = $this->codecogsEndpointOptions();
+
+		if (!isset($options[$value])) {
+			return 'png.image';
+		}
+
+		return $value;
+	}
 
 	function allow_template($template)
 	{
@@ -39,6 +56,8 @@ MathJax = {
 				return '1';
 			case 'qa-codecogs-meta-description-enable':
 				return '0';
+			case 'qa-codecogs-render-endpoint':
+				return 'png.image';
 			default:
 				return null;
 
@@ -65,6 +84,8 @@ MathJax = {
 				qa_opt('qa-codecogs-feed-enable', '0');
 			if(!isset($_POST['qa-codecogs-meta-description-enable']))
 				qa_opt('qa-codecogs-meta-description-enable', '0');
+
+			qa_opt('qa-codecogs-render-endpoint', $this->normalizeCodecogsEndpoint(qa_post_text('qa-codecogs-render-endpoint')));
 
 			$ok = qa_lang('admin/options_saved');
 		}
@@ -124,6 +145,13 @@ MathJax = {
 				'tags' => 'NAME="qa-codecogs-feed-enable"',
 				'value' => qa_opt('qa-codecogs-feed-enable'),
 				'type' => 'checkbox',
+				);
+		$fields[] = array(
+				'label' => 'CodeCogs render endpoint (png.image or svg.image)',
+				'tags' => 'NAME="qa-codecogs-render-endpoint"',
+				'value' => $this->normalizeCodecogsEndpoint(qa_opt('qa-codecogs-render-endpoint')),
+				'options' => $this->codecogsEndpointOptions(),
+				'type' => 'select',
 				);
 		$fields[] = array(
 				'label' => 'Convert TeX to CodeCogs URLs in question meta description',

@@ -28,7 +28,12 @@ function qa_mathjax_build_codecogs_url($latex) {
 		return '';
 	}
 
-	return 'https://latex.codecogs.com/png.image?' . rawurlencode($latex);
+	$endpoint = qa_strtolower(trim((string)qa_opt('qa-codecogs-render-endpoint')));
+	if (($endpoint !== 'png.image') && ($endpoint !== 'svg.image')) {
+		$endpoint = 'png.image';
+	}
+
+	return 'https://latex.codecogs.com/' . $endpoint . '?' . rawurlencode($latex);
 }
 
 function qa_mathjax_convert_to_codecogs($content, $mode = 'img') {
