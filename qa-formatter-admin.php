@@ -35,6 +35,10 @@ MathJax = {
 				return '1';
 			case 'qa-ckepreview-enable':
 				return '1';
+			case 'qa-codecogs-feed-enable':
+				return '1';
+			case 'qa-codecogs-meta-description-enable':
+				return '0';
 			default:
 				return null;
 
@@ -57,6 +61,10 @@ MathJax = {
                                 qa_opt('qa-prettify-enable', '0');
 			if(!isset($_POST['qa-ckepreview-enable']))
                                 qa_opt('qa-ckepreview-enable', '0');
+			if(!isset($_POST['qa-codecogs-feed-enable']))
+				qa_opt('qa-codecogs-feed-enable', '0');
+			if(!isset($_POST['qa-codecogs-meta-description-enable']))
+				qa_opt('qa-codecogs-meta-description-enable', '0');
 
 			$ok = qa_lang('admin/options_saved');
 		}
@@ -109,6 +117,18 @@ MathJax = {
 				'label' => 'Enable CKEditor Preview',
 				'tags' => 'NAME="qa-ckepreview-enable"',
 				'value' => qa_opt('qa-ckepreview-enable'),
+				'type' => 'checkbox',
+				);
+		$fields[] = array(
+				'label' => 'Convert TeX to CodeCogs images in feeds',
+				'tags' => 'NAME="qa-codecogs-feed-enable"',
+				'value' => qa_opt('qa-codecogs-feed-enable'),
+				'type' => 'checkbox',
+				);
+		$fields[] = array(
+				'label' => 'Convert TeX to CodeCogs URLs in question meta description',
+				'tags' => 'NAME="qa-codecogs-meta-description-enable"',
+				'value' => qa_opt('qa-codecogs-meta-description-enable'),
 				'type' => 'checkbox',
 				);
 

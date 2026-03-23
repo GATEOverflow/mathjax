@@ -1,4 +1,21 @@
 <?php
+function qa_viewer_html($content, $format, $options = array())
+{
+	if (qa_to_override(__FUNCTION__)) { $args = func_get_args(); $html = qa_call_override(__FUNCTION__, $args); }
+	else $html = $content;
+
+	if (
+		qa_opt('qa-codecogs-feed-enable') &&
+		function_exists('qa_mathjax_is_feed_request') &&
+		qa_mathjax_is_feed_request() &&
+		function_exists('qa_mathjax_convert_to_codecogs')
+	) {
+		$html = qa_mathjax_convert_to_codecogs($html, 'img');
+	}
+
+	return $html;
+}
+
 function qa_string_to_words1($string, $tolowercase = true, $delimiters = false, $splitideographs = true, $splithyphens = true)
 {
 	if (qa_to_override(__FUNCTION__)) { $args=func_get_args(); return qa_call_override(__FUNCTION__, $args); }

@@ -114,5 +114,21 @@ border-top:2px dashed #def; border-bottom:2px dashed #def; padding-top:10px; mar
 		$this->output('<style type="text/css">'.qa_opt('qa-formatter-css').'</style>');
 		}
 	}
+
+	function head_metas()
+	{
+		if (
+			$this->template === 'question' &&
+			qa_opt('qa-codecogs-meta-description-enable') &&
+			strlen($this->content['description'] ?? '') &&
+			function_exists('qa_mathjax_convert_to_codecogs')
+		) {
+			$decoded = html_entity_decode($this->content['description'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+			$converted = qa_mathjax_convert_to_codecogs($decoded, 'url');
+			$this->content['description'] = qa_html($converted);
+		}
+
+		qa_html_theme_base::head_metas();
+	}
 }
 ?>

@@ -12,6 +12,71 @@ qa_register_plugin_overrides('qa-formatter-overrides.php', 'Formatter Overrides'
 
 qa_register_plugin_module('module', 'qa-formatter-admin.php', 'qa_formatter_admin', 'Formatter Admin');
 
+function qa_mathjax_is_feed_request() {
+	$request = qa_request();
+	if (!is_string($request) || $request === '') {
+		return false;
+	}
+
+	$request = qa_strtolower($request);
+	return strpos($request, 'feed/') === 0;
+}
+
+function qa_mathjax_build_codecogs_url($latex) {
+	$latex = trim(html_entity_decode($latex, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+	if ($latex === '') {
+		return '';
+	}
+
+	return 'https://latex.codecogs.com/png.image?' . rawurlencode($latex);
+}
+
+function qa_mathjax_convert_to_codecogs($content, $mode = 'img') {
+	$build_output = function ($latex, $display_mode) use ($mode) {
+		$url = qa_mathjax_build_codecogs_url($latex);
+		if ($url === '') {
+			return '';
+		}
+
+		if ($mode === 'url') {
+			return $url;
+		}
+
+		$alt = htmlspecialchars(trim(html_entity_decode($latex, ENT_QUOTES | ENT_HTML5, 'UTF-8')), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		$style = $display_mode ? 'display:block; margin:8px 0;' : 'vertical-align:middle;';
+
+		return '<img src="' . $url . '" alt="' . $alt . '" style="' . $style . '">';
+	};
+
+	$content = preg_replace_callback(
+		'/<script[^>]*type=["\']math\/tex(?:;\s*mode=display)?["\'][^>]*>(.*?)<\/script>/is',
+		function ($match) use ($build_output) {
+			$is_display = stripos($match[0], 'mode=display') !== false;
+			return $build_output($match[1], $is_display);
+		},
+		$content
+	);
+
+	$patterns = array(
+		'/\\\\\[(.+?)\\\\\]/s' => true,
+		'/\\\\\((.+?)\\\\\)/s' => false,
+		'/\$\$(.+?)\$\$/s' => true,
+		'/(?<!\$)\$(?!\$)(.+?)(?<!\$)\$(?!\$)/s' => false,
+	);
+
+	foreach ($patterns as $pattern => $is_display) {
+		$content = preg_replace_callback(
+			$pattern,
+			function ($match) use ($build_output, $is_display) {
+				return $build_output($match[1], $is_display);
+			},
+			$content
+		);
+	}
+
+	return $content;
+}
+
 /*
 	Omit PHP closing tag to help avoid accidental output
  */
