@@ -30,17 +30,32 @@ class qa_formatter_admin {
 				return file_get_contents(dirname(__FILE__).'/custom.css');
 		case 'qa-mathjax-config':
 				return '
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="katexReady()"></script>
 <script>
-MathJax = {
-  tex: {
-    inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-    processEscapes: true
-  }
+var _katexOpts = {
+    delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$",  right: "$",  display: false},
+        {left: "\\(", right: "\\)", display: false},
+        {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
 };
+function katexReady() { renderMathInElement(document.body, _katexOpts); }
+function typeset(code) {
+    try {
+        var els = code();
+        if (!Array.isArray(els)) els = [els];
+        els.forEach(function(el) {
+            if (el && typeof renderMathInElement === "function") renderMathInElement(el, _katexOpts);
+        });
+    } catch(e) {}
+    return Promise.resolve();
+}
 </script>
-<script id="MathJax-script" async
- src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
 				';
 			case 'qa-mathjax-url':
 				return 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
