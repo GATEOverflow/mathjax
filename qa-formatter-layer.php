@@ -6,6 +6,96 @@ class qa_html_theme_layer extends qa_html_theme_base {
 		return '1.1.1';
 	}
 
+	function getKatexConfig()
+	{
+		return '
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="katexReady()"></script>
+<script>
+function _texFromHtml(html) {
+    var s = html;
+    /* Convert block-level tags to newlines */
+    s = s.replace(/<br\\s*\\/?>/gi, "\\n");
+    s = s.replace(/<\\/p>/gi, "\\n");
+    s = s.replace(/<p[^>]*>/gi, "");
+    s = s.replace(/<\\/div>/gi, "\\n");
+    s = s.replace(/<div[^>]*>/gi, "");
+    /* Handle common HTML entities */
+    s = s.replace(/&nbsp;/gi, " ");
+    s = s.replace(/&lt;/gi, "<");
+    s = s.replace(/&gt;/gi, ">");
+    s = s.replace(/&amp;/gi, "&");
+    /* Remove other HTML tags but keep content */
+    s = s.replace(/<[^>]+>/g, "");
+    /* Decode remaining HTML entities */
+    var tmp = document.createElement("textarea");
+    tmp.innerHTML = s;
+    return tmp.value;
+}
+function _preprocessDisplayMath(el) {
+    if (typeof katex === "undefined") return;
+    var html = el.innerHTML, orig = html;
+    html = html.replace(/\\$\\$([\\s\\S]*?)\\$\\$/g, function(m, tex) {
+        try { return katex.renderToString(_texFromHtml(tex), {displayMode: true, throwOnError: false}); }
+        catch(e) { return m; }
+    });
+    html = html.replace(/\\$([^\\$]*?\\\\begin\\{[^\\$]*?)\\$/g, function(m, tex) {
+        try { return katex.renderToString(_texFromHtml(tex), {displayMode: false, throwOnError: false}); }
+        catch(e) { return m; }
+    });
+    html = html.replace(/\\\\\\[([\\s\\S]*?)\\\\\\]/g, function(m, tex) {
+        try { return katex.renderToString(_texFromHtml(tex), {displayMode: true, throwOnError: false}); }
+        catch(e) { return m; }
+    });
+    html = html.replace(/\\\\begin\\{([^}]+)\\}([\\s\\S]*?)\\\\end\\{\\1\\}/g, function(m, env, inner) {
+        try {
+            var tex = "\\\\begin{" + env + "}" + _texFromHtml(inner) + "\\\\end{" + env + "}";
+            return katex.renderToString(tex, {displayMode: true, throwOnError: false});
+        } catch(e) { return m; }
+    });
+    if (html !== orig) el.innerHTML = html;
+}
+var _katexOpts = {
+    delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$",  right: "$",  display: false},
+        {left: "\\\\(", right: "\\\\)", display: false},
+        {left: "\\\\[", right: "\\\\]", display: true}
+    ],
+    throwOnError: false
+};
+var _katexQueue = [];
+function katexReady() {
+    /* Preprocess content areas that may have multiline LaTeX in HTML */
+    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-a-item-content, .qa-c-item-content, .qa-main, .entry-content, .post-content");
+    contentAreas.forEach(function(el) { _preprocessDisplayMath(el); });
+    /* Also preprocess body for any other areas */
+    _preprocessDisplayMath(document.body);
+    renderMathInElement(document.body, _katexOpts);
+    while (_katexQueue.length) { var el = _katexQueue.shift(); if(el) { _preprocessDisplayMath(el); renderMathInElement(el, _katexOpts); } }
+}
+function typeset(code) {
+    try {
+        var els = code();
+        if (!Array.isArray(els)) els = [els];
+        els.forEach(function(el) {
+            if (!el) return;
+            if (typeof renderMathInElement === "function") {
+                _preprocessDisplayMath(el);
+                renderMathInElement(el, _katexOpts);
+            } else {
+                _katexQueue.push(el);
+            }
+        });
+    } catch(e) { console.log("typeset failed: " + e.message); }
+    return Promise.resolve();
+}
+</script>
+		';
+	}
+
 	function getPreviewString()
 	{
 
@@ -66,9 +156,16 @@ typeset(() => {
 		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list', 'qp-quickedit-page', 'category');
 		if(in_array($this->template, $allowed_templates))
 		{
-			if(qa_opt("qa-mathjax-enable") && qa_opt('qa-mathjax-config'))
+			if(qa_opt("qa-mathjax-enable"))
 			{
-				$this->output(qa_opt('qa-mathjax-config'));
+				if(qa_opt('qa-katex-enable'))
+				{
+					$this->output($this->getKatexConfig());
+				}
+				else if(qa_opt('qa-mathjax-config'))
+				{
+					$this->output(qa_opt('qa-mathjax-config'));
+				}
 			}
 			if(qa_opt("qa-prettify-enable") && (!qa_opt("qa-ckepreview-enable")))// || ($this->template !== 'ask')))
 			{

@@ -63,6 +63,8 @@ function typeset(code) {
 				return 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
 			case 'qa-mathjax-enable':
 				return '1';
+			case 'qa-katex-enable':
+				return '1';
 			case 'qa-prettify-enable':
 				return '1';
 			case 'qa-ckepreview-enable':
@@ -91,6 +93,8 @@ function typeset(code) {
 			}
 			if(!isset($_POST['qa-mathjax-enable']))
                                 qa_opt('qa-mathjax-enable', '0');
+			if(!isset($_POST['qa-katex-enable']))
+                                qa_opt('qa-katex-enable', '0');
 			if(!isset($_POST['qa-prettify-enable']))
                                 qa_opt('qa-prettify-enable', '0');
 			if(!isset($_POST['qa-ckepreview-enable']))
@@ -138,9 +142,15 @@ function typeset(code) {
 				'type' => 'text',
 				);
 		$fields[] = array(
-				'label' => 'Enable MathJax',
+				'label' => 'Enable Math Rendering',
 				'tags' => 'NAME="qa-mathjax-enable"',
 				'value' => qa_opt('qa-mathjax-enable'),
+				'type' => 'checkbox',
+				);
+		$fields[] = array(
+				'label' => 'Use KaTeX (faster) instead of MathJax config above',
+				'tags' => 'NAME="qa-katex-enable"',
+				'value' => qa_opt('qa-katex-enable'),
 				'type' => 'checkbox',
 				);
 		$fields[] = array(
