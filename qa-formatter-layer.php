@@ -69,7 +69,7 @@ var _katexOpts = {
 var _katexQueue = [];
 function katexReady() {
     /* Preprocess only specific content areas that may have multiline LaTeX in HTML */
-    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
+    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
     contentAreas.forEach(function(el) { _preprocessDisplayMath(el); });
     /* Then let auto-render handle the rest */
     renderMathInElement(document.body, _katexOpts);
