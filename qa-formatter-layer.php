@@ -68,11 +68,10 @@ var _katexOpts = {
 };
 var _katexQueue = [];
 function katexReady() {
-    /* Preprocess content areas that may have multiline LaTeX in HTML */
-    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-a-item-content, .qa-c-item-content, .qa-main, .entry-content, .post-content");
+    /* Preprocess only specific content areas that may have multiline LaTeX in HTML */
+    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
     contentAreas.forEach(function(el) { _preprocessDisplayMath(el); });
-    /* Also preprocess body for any other areas */
-    _preprocessDisplayMath(document.body);
+    /* Then let auto-render handle the rest */
     renderMathInElement(document.body, _katexOpts);
     while (_katexQueue.length) { var el = _katexQueue.shift(); if(el) { _preprocessDisplayMath(el); renderMathInElement(el, _katexOpts); } }
 }
