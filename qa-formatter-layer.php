@@ -43,6 +43,7 @@ function _preprocessDisplayMath(el) {
             _annots.push(m); return "<!--KA:" + (_annots.length - 1) + "-->";
         });
     }
+    html = html.replace(/\\\\\[/g, "$$$$").replace(/\\\\\]/g, "$$$$");
     html = html.replace(/\\$\\$([\\s\\S]*?)\\$\\$/g, function(m, tex) {
         try { return katex.renderToString(_texFromHtml(tex), {displayMode: true, throwOnError: false}); }
         catch(e) { return m; }
@@ -53,11 +54,7 @@ function _preprocessDisplayMath(el) {
         catch(e) { return m; }
     });
     html = _protect(html);
-    html = html.replace(/\\\\\\[([\\s\\S]*?)\\\\\\]/g, function(m, tex) {
-        try { return katex.renderToString(_texFromHtml(tex), {displayMode: true, throwOnError: false}); }
-        catch(e) { return m; }
-    });
-    html = _protect(html);
+
     html = html.replace(/\\\\begin\\{([^}]+)\\}([\\s\\S]*?)\\\\end\\{\\1\\}/g, function(m, env, inner) {
         try {
             var tex = "\\\\begin{" + env + "}" + _texFromHtml(inner) + "\\\\end{" + env + "}";
