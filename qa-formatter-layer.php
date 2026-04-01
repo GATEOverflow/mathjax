@@ -83,17 +83,6 @@ function katexReady() {
     /* Preprocess only specific content areas that may have multiline LaTeX in HTML */
     var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
     contentAreas.forEach(function(el) { _preprocessDisplayMath(el); });
-    /* Fallback: find any block element containing $$ or \\begin{ split across
-       HTML tags that the selectors above may have missed */
-    var processed = new Set();
-    contentAreas.forEach(function(el) { processed.add(el); });
-    document.querySelectorAll("p, div, td, li, blockquote, section, article, dd").forEach(function(el) {
-        if (processed.has(el)) return;
-        var h = el.innerHTML;
-        if ((h.indexOf("$$") !== -1 || h.indexOf("\\\\begin{") !== -1 || h.indexOf("\\\\[") !== -1) && el.querySelector("br, p, div")) {
-            _preprocessDisplayMath(el);
-        }
-    });
     /* Then let auto-render handle the rest */
     renderMathInElement(document.body, _katexOpts);
     while (_katexQueue.length) { var el = _katexQueue.shift(); if(el) { _preprocessDisplayMath(el); renderMathInElement(el, _katexOpts); } }
