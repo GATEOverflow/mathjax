@@ -37,23 +37,35 @@ function _texFromHtml(html) {
 function _preprocessDisplayMath(el) {
     if (typeof katex === "undefined") return;
     var html = el.innerHTML, orig = html;
+    var _annots = [];
+    function _protect(h) {
+        return h.replace(/<annotation[^>]*>[\\s\\S]*?<\\/annotation>/g, function(m) {
+            _annots.push(m); return "<!--KA:" + (_annots.length - 1) + "-->";
+        });
+    }
     html = html.replace(/\\$\\$([\\s\\S]*?)\\$\\$/g, function(m, tex) {
         try { return katex.renderToString(_texFromHtml(tex), {displayMode: true, throwOnError: false}); }
         catch(e) { return m; }
     });
+    html = _protect(html);
     html = html.replace(/\\$([^\\$]*?\\\\begin\\{[^\\$]*?)\\$/g, function(m, tex) {
         try { return katex.renderToString(_texFromHtml(tex), {displayMode: false, throwOnError: false}); }
         catch(e) { return m; }
     });
+    html = _protect(html);
     html = html.replace(/\\\\\\[([\\s\\S]*?)\\\\\\]/g, function(m, tex) {
         try { return katex.renderToString(_texFromHtml(tex), {displayMode: true, throwOnError: false}); }
         catch(e) { return m; }
     });
+    html = _protect(html);
     html = html.replace(/\\\\begin\\{([^}]+)\\}([\\s\\S]*?)\\\\end\\{\\1\\}/g, function(m, env, inner) {
         try {
             var tex = "\\\\begin{" + env + "}" + _texFromHtml(inner) + "\\\\end{" + env + "}";
             return katex.renderToString(tex, {displayMode: true, throwOnError: false});
         } catch(e) { return m; }
+    });
+    html = html.replace(/<!--KA:(\\d+)-->/g, function(m, i) {
+        return _annots[parseInt(i)];
     });
     if (html !== orig) el.innerHTML = html;
 }
@@ -71,6 +83,17 @@ function katexReady() {
     /* Preprocess only specific content areas that may have multiline LaTeX in HTML */
     var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
     contentAreas.forEach(function(el) { _preprocessDisplayMath(el); });
+    /* Fallback: find any block element containing $$ or \\begin{ split across
+       HTML tags that the selectors above may have missed */
+    var processed = new Set();
+    contentAreas.forEach(function(el) { processed.add(el); });
+    document.querySelectorAll("p, div, td, li, blockquote, section, article, dd").forEach(function(el) {
+        if (processed.has(el)) return;
+        var h = el.innerHTML;
+        if ((h.indexOf("$$") !== -1 || h.indexOf("\\\\begin{") !== -1 || h.indexOf("\\\\[") !== -1) && el.querySelector("br, p, div")) {
+            _preprocessDisplayMath(el);
+        }
+    });
     /* Then let auto-render handle the rest */
     renderMathInElement(document.body, _katexOpts);
     while (_katexQueue.length) { var el = _katexQueue.shift(); if(el) { _preprocessDisplayMath(el); renderMathInElement(el, _katexOpts); } }
