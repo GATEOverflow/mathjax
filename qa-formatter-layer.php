@@ -43,7 +43,7 @@ function _preprocessDisplayMath(el) {
             _annots.push(m); return "<!--KA:" + (_annots.length - 1) + "-->";
         });
     }
-    html = html.replace(/\\\\\[/g, "$$$$").replace(/\\\\\]/g, "$$$$");
+    html = html.replace(/(?<!\\\\)\\\\\[/g, "$$$$").replace(/(?<!\\\\)\\\\\]/g, "$$$$");
     html = html.replace(/\\$\\$([\\s\\S]*?)\\$\\$/g, function(m, tex) {
         try { return katex.renderToString(_texFromHtml(tex), {displayMode: true, throwOnError: false}); }
         catch(e) { return m; }
@@ -75,8 +75,33 @@ var _katexOpts = {
     ],
     throwOnError: false
 };
+function _fixKatexCompat(tex) {
+    /* \\color{X}{Y} -> \\textcolor{X}{Y} to avoid scope bleeding */
+    tex = tex.replace(/\\\\color\\s*(\\{[^}]*\\})\\s*\\{/g, "\\\\textcolor$1{");
+    /* Remove \\hline outside array/tabular environments where KaTeX forbids it */
+    if (!/\\\\begin\\{(array|tabular)\\}/.test(tex)) {
+        tex = tex.replace(/\\\\hline\\b/g, "");
+    }
+    /* Strip optional spacing args like \\[1em], \\[3em] after line breaks */
+    tex = tex.replace(/\\\\\\\\\\s*\\[\\s*[\\d.]+\\s*(em|ex|pt|mm|cm|in|pc|mu)\\s*\\]/g, "\\\\\\\\");
+    return tex;
+}
+var _katexPatched = false;
+function _patchKatex() {
+    if (_katexPatched || typeof katex === "undefined") return;
+    _katexPatched = true;
+    var _origRenderToString = katex.renderToString;
+    katex.renderToString = function(tex, opts) {
+        return _origRenderToString.call(katex, _fixKatexCompat(tex), opts);
+    };
+    var _origRender = katex.render;
+    katex.render = function(tex, el, opts) {
+        return _origRender.call(katex, _fixKatexCompat(tex), el, opts);
+    };
+}
 var _katexQueue = [];
 function katexReady() {
+    _patchKatex();
     /* Preprocess only specific content areas that may have multiline LaTeX in HTML */
     var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
     contentAreas.forEach(function(el) { _preprocessDisplayMath(el); });
