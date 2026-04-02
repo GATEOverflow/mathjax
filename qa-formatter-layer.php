@@ -84,6 +84,8 @@ function _fixKatexCompat(tex) {
     }
     /* Strip optional spacing args like \\[1em], \\[3em] after line breaks */
     tex = tex.replace(/\\\\\\\\\\s*\\[\\s*[\\d.]+\\s*(em|ex|pt|mm|cm|in|pc|mu)\\s*\\]/g, "\\\\\\\\");
+    /* Strip \\renewcommand{\\arraystretch}{...} — unsupported in KaTeX */
+    tex = tex.replace(/\\\\renewcommand\\s*\\{\\s*\\\\arraystretch\\s*\\}\\s*\\{[^}]*\\}/g, "");
     return tex;
 }
 var _katexPatched = false;
