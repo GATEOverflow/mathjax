@@ -75,7 +75,54 @@ var _katexOpts = {
     ],
     throwOnError: false
 };
-function _fixKatexCompat(tex) {
+function _fixTextUnderscores(tex) {
+    var re = /\\\\text(?:bf|it|rm|sf|tt|normal)?\\s*\\{/g;
+    var result = "", i = 0, m;
+    while ((m = re.exec(tex)) !== null) {
+        result += tex.substring(i, m.index) + m[0];
+        var start = m.index + m[0].length, braces = 1, j = start;
+        while (j < tex.length && braces > 0) {
+            if (tex[j] === "{") braces++;
+            else if (tex[j] === "}") braces--;
+            if (braces > 0) j++;
+        }
+        result += tex.substring(start, j).replace(/(?<!\\\\)_/g, "\\\\_") + "}";
+        i = j + 1; re.lastIndex = i;
+    }
+    return result + tex.substring(i);
+}
+function _fixArrayAtCols(tex) {
+    var pat = /\\\\begin\\{array\\}\\{/g;
+    var result = "", lastEnd = 0, m;
+    while ((m = pat.exec(tex)) !== null) {
+        result += tex.substring(lastEnd, m.index) + m[0];
+        var start = m.index + m[0].length, braces = 1, j = start;
+        while (j < tex.length && braces > 0) {
+            if (tex[j] === "{") braces++;
+            else if (tex[j] === "}") braces--;
+            if (braces > 0) j++;
+        }
+        var spec = tex.substring(start, j), cleaned = "", ci = 0;
+        while (ci < spec.length) {
+            if (spec[ci] === "@" && ci + 1 < spec.length && spec[ci + 1] === "{") {
+                var b = 0; ci++;
+                while (ci < spec.length) {
+                    if (spec[ci] === "{") b++;
+                    else if (spec[ci] === "}") { b--; if (b === 0) { ci++; break; } }
+                    ci++;
+                }
+            } else { cleaned += spec[ci]; ci++; }
+        }
+        result += cleaned.trim() + "}";
+        lastEnd = j + 1; pat.lastIndex = lastEnd;
+    }
+    return result + tex.substring(lastEnd);
+}
+function _fixKatexCompat(tex, isDisplay) {
+    /* Escape bare underscores inside \\text{}, \\textbf{}, etc. */
+    tex = _fixTextUnderscores(tex);
+    /* Strip @{...} from array/tabular column specs — unsupported in KaTeX */
+    tex = _fixArrayAtCols(tex);
     /* \\color{X}{Y} -> \\textcolor{X}{Y} to avoid scope bleeding */
     tex = tex.replace(/\\\\color\\s*(\\{[^}]*\\})\\s*\\{/g, "\\\\textcolor$1{");
     /* Remove \\hline outside array/tabular environments where KaTeX forbids it */
@@ -86,6 +133,12 @@ function _fixKatexCompat(tex) {
     tex = tex.replace(/\\\\\\\\\\s*\\[\\s*[\\d.]+\\s*(em|ex|pt|mm|cm|in|pc|mu)\\s*\\]/g, "\\\\\\\\");
     /* Strip \\renewcommand{\\arraystretch}{...} — unsupported in KaTeX */
     tex = tex.replace(/\\\\renewcommand\\s*\\{\\s*\\\\arraystretch\\s*\\}\\s*\\{[^}]*\\}/g, "");
+    /* \\tag{X} -> \\qquad (X) in inline mode — KaTeX only supports \\tag in display mode */
+    if (!isDisplay) {
+        tex = tex.replace(/\\\\tag\\*?\\s*\\{([^}]*)\\}/g, "\\\\qquad ($1)");
+    }
+    /* \\bbox[opts]{X} -> \\boxed{X} — unsupported in KaTeX */
+    tex = tex.replace(/\\\\bbox\\s*(?:\\[[^\\]]*\\])?\\s*\\{/g, "\\\\boxed{");
     return tex;
 }
 var _katexPatched = false;
@@ -94,11 +147,13 @@ function _patchKatex() {
     _katexPatched = true;
     var _origRenderToString = katex.renderToString;
     katex.renderToString = function(tex, opts) {
-        return _origRenderToString.call(katex, _fixKatexCompat(tex), opts);
+        var disp = opts && opts.displayMode;
+        return _origRenderToString.call(katex, _fixKatexCompat(tex, disp), opts);
     };
     var _origRender = katex.render;
     katex.render = function(tex, el, opts) {
-        return _origRender.call(katex, _fixKatexCompat(tex), el, opts);
+        var disp = opts && opts.displayMode;
+        return _origRender.call(katex, _fixKatexCompat(tex, disp), el, opts);
     };
 }
 var _katexQueue = [];
