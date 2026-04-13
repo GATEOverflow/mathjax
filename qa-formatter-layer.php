@@ -79,14 +79,38 @@ function _fixTextUnderscores(tex) {
     var re = /\\\\text(?:bf|it|rm|sf|tt|normal)?\\s*\\{/g;
     var result = "", i = 0, m;
     while ((m = re.exec(tex)) !== null) {
-        result += tex.substring(i, m.index) + m[0];
-        var start = m.index + m[0].length, braces = 1, j = start;
+        var cmd = m[0];
+        result += tex.substring(i, m.index);
+        var start = m.index + cmd.length, braces = 1, j = start;
         while (j < tex.length && braces > 0) {
             if (tex[j] === "{") braces++;
             else if (tex[j] === "}") braces--;
             if (braces > 0) j++;
         }
-        result += tex.substring(start, j).replace(/(?<!\\\\)_/g, "\\\\_") + "}";
+        var inner = tex.substring(start, j);
+        /* Split on unescaped $ to find nested math */
+        var parts = [], last = 0, ci;
+        for (ci = 0; ci < inner.length; ci++) {
+            if (inner[ci] === "$" && (ci === 0 || inner[ci-1] !== "\\\\")) {
+                parts.push(inner.substring(last, ci)); last = ci + 1;
+            }
+        }
+        parts.push(inner.substring(last));
+        function _escText(s) { return s.replace(/([^\\\\])_/g,"$1\\\\_").replace(/^_/,"\\\\_").replace(/([^\\\\])#/g,"$1\\\\#").replace(/^#/,"\\\\#"); }
+        if (parts.length >= 3) {
+            var rebuilt = "";
+            for (var pi = 0; pi < parts.length; pi++) {
+                if (pi % 2 === 0) {
+                    var t = _escText(parts[pi]);
+                    if (t.length > 0 || pi === 0) rebuilt += cmd + t + "}";
+                } else {
+                    rebuilt += parts[pi];
+                }
+            }
+            result += rebuilt;
+        } else {
+            result += cmd + _escText(inner) + "}";
+        }
         i = j + 1; re.lastIndex = i;
     }
     return result + tex.substring(i);
