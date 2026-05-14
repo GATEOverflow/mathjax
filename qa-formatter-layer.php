@@ -143,6 +143,29 @@ function _fixArrayAtCols(tex) {
     }
     return result + tex.substring(lastEnd);
 }
+function _wrapSubSuperFns(tex) {
+    /* Wrap _\cmd{...} and ^\cmd{...} in braces so KaTeX can use functions-with-args
+       as subscript/superscript atoms: _\boxed{X} -> _{\boxed{X}}.
+       Uses brace-counting to correctly handle arbitrary nesting depth. */
+    var out = "", i = 0;
+    while (i < tex.length) {
+        if ((tex[i] === "_" || tex[i] === "^") && (i === 0 || tex[i - 1] !== "\\\\") && /^\\\\(boxed|cancel)\\{/.test(tex.slice(i + 1))) {
+            var ud = tex[i], m = tex.slice(i + 1).match(/^\\\\(boxed|cancel)\{/), cmd = m[0];
+            out += ud + "{" + cmd;
+            i += 1 + cmd.length;
+            var depth = 1;
+            while (i < tex.length && depth > 0) {
+                if (tex[i] === "{") depth++;
+                else if (tex[i] === "}") { depth--; if (depth === 0) { out += "}"; i++; break; } }
+                out += tex[i++];
+            }
+            out += "}";
+        } else {
+            out += tex[i++];
+        }
+    }
+    return out;
+}
 function _fixKatexCompat(tex, isDisplay) {
     /* Escape bare underscores inside \\text{}, \\textbf{}, etc. */
     tex = _fixTextUnderscores(tex);
@@ -164,6 +187,10 @@ function _fixKatexCompat(tex, isDisplay) {
     }
     /* \\bbox[opts]{X} -> \\boxed{X} — unsupported in KaTeX */
     tex = tex.replace(/\\\\bbox\\s*(?:\\[[^\\]]*\\])?\\s*\\{/g, "\\\\boxed{");
+    /* _\\boxed{X} -> _{\\boxed{X}}, similarly for \\cancel — KaTeX cannot use
+       functions-with-required-arguments directly as subscript/superscript atoms;
+       uses brace-counting to handle arbitrary nesting depth */
+    tex = _wrapSubSuperFns(tex);
     return tex;
 }
 var _katexPatched = false;
