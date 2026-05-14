@@ -73,7 +73,8 @@ var _katexOpts = {
         {left: "\\\\(", right: "\\\\)", display: false},
         {left: "\\\\[", right: "\\\\]", display: true}
     ],
-    throwOnError: false
+    throwOnError: false,
+    strict: false
 };
 function _fixTextUnderscores(tex) {
     var re = /\\\\text(?:bf|it|rm|sf|tt|normal)?\\s*\\{/g;
