@@ -214,10 +214,13 @@ function katexReady() {
     _patchKatex();
     /* Preprocess only specific content areas that may have multiline LaTeX in HTML */
     var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
-    contentAreas.forEach(function(el) { _preprocessDisplayMath(el); });
-    /* Then let auto-render handle the rest */
+    /* Run renderMathInElement FIRST so $...$ inline math is consumed before
+       _preprocessDisplayMath.  If _preprocess ran first, the closing $ of an
+       expression like $U \leq 4$ would be mistaken for the opening $ of the
+       $...\begin{env}...$ handler, swallowing the following bare array block. */
     renderMathInElement(document.body, _katexOpts);
-    while (_katexQueue.length) { var el = _katexQueue.shift(); if(el) { _preprocessDisplayMath(el); renderMathInElement(el, _katexOpts); } }
+    contentAreas.forEach(function(el) { _preprocessDisplayMath(el); });
+    while (_katexQueue.length) { var el = _katexQueue.shift(); if(el) { renderMathInElement(el, _katexOpts); _preprocessDisplayMath(el); } }
 }
 function typeset(code) {
     try {
@@ -226,8 +229,8 @@ function typeset(code) {
         els.forEach(function(el) {
             if (!el) return;
             if (typeof renderMathInElement === "function") {
-                _preprocessDisplayMath(el);
                 renderMathInElement(el, _katexOpts);
+                _preprocessDisplayMath(el);
             } else {
                 _katexQueue.push(el);
             }
