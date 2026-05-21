@@ -49,7 +49,8 @@ function _preprocessDisplayMath(el) {
         catch(e) { return m; }
     });
     html = _protect(html);
-    html = html.replace(/\\$([^\\$]*?\\\\begin\\{[^\\$]*?)\\$/g, function(m, tex) {
+    // Use (?:[^$\\\\]|\\\\.)* to allow escaped \\$ inside math content.
+    html = html.replace(/\\$((?:[^$\\\\]|\\\\.)*?\\\\begin\\{(?:[^$\\\\]|\\\\.)*?)\\$/g, function(m, tex) {
         try { return katex.renderToString(_texFromHtml(tex), {displayMode: false, throwOnError: false}); }
         catch(e) { return m; }
     });
