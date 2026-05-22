@@ -172,6 +172,10 @@ function _wrapSubSuperFns(tex) {
     return out;
 }
 function _fixKatexCompat(tex, isDisplay) {
+    /* Replace non-breaking spaces (U+00A0 from &nbsp; in HTML) with regular spaces --
+       KaTeX treats U+00A0 as a character token, not whitespace, causing errors like
+       "Unknown column alignment" when it appears near \\begin{array} column specs. */
+    tex = tex.replace(/\u00A0/g, " ");
     /* Escape bare underscores inside \\text{}, \\textbf{}, etc. */
     tex = _fixTextUnderscores(tex);
     /* Strip @{...} from array/tabular column specs — unsupported in KaTeX */
