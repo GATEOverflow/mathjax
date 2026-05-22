@@ -43,7 +43,11 @@ function _preprocessDisplayMath(el) {
             _annots.push(m); return "<!--KA:" + (_annots.length - 1) + "-->";
         });
     }
+    // Protect any annotations already in the DOM (from renderMathInElement
+    // that ran before us) before we do any string replacements.
+    html = _protect(html);
     html = html.replace(/(?<!\\\\)\\\\\[/g, "$$$$").replace(/(?<!\\\\)\\\\\]/g, "$$$$");
+    html = html.replace(/(?<!\\\\)\\\\\(/g, "$").replace(/(?<!\\\\)\\\\\)/g, "$");
     html = html.replace(/\\$\\$([\\s\\S]*?)\\$\\$/g, function(m, tex) {
         try { return katex.renderToString(_texFromHtml(tex), {displayMode: true, throwOnError: false}); }
         catch(e) { return m; }
