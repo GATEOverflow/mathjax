@@ -176,6 +176,10 @@ function _fixKatexCompat(tex, isDisplay) {
     tex = _fixTextUnderscores(tex);
     /* Strip @{...} from array/tabular column specs — unsupported in KaTeX */
     tex = _fixArrayAtCols(tex);
+    /* Spacing commands before ^ or _ cause KaTeX "Got group of unknown type: internal" --
+       insert {} as an explicit empty base: e.g. \\; ^{\\ast} -> \\;{}^{\\ast} */
+    tex = tex.replace(/(\\\\[,;:!])\\s*([_^])/g, "$1{}$2");
+    tex = tex.replace(/(\\\\q?quad)\\s*([_^])/g, "$1{}$2");
     /* \\color{X}{Y} -> \\textcolor{X}{Y} to avoid scope bleeding */
     tex = tex.replace(/\\\\color\\s*(\\{[^}]*\\})\\s*\\{/g, "\\\\textcolor$1{");
     /* Remove \\hline outside array/tabular environments where KaTeX forbids it */
