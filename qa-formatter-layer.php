@@ -3,7 +3,7 @@
 class qa_html_theme_layer extends qa_html_theme_base {
 	function get_pf_version()
 	{
-		return '1.1.1';
+		return '1.1.3';
 	}
 
 	function getKatexConfig()
@@ -225,7 +225,7 @@ var _katexQueue = [];
 function katexReady() {
     _patchKatex();
     /* Preprocess only specific content areas that may have multiline LaTeX in HTML */
-    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-q-item-content, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
+    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-q-item-content, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text, #bv-content-area");
     /* Run renderMathInElement FIRST so $...$ inline math is consumed before
        _preprocessDisplayMath.  If _preprocess ran first, the closing $ of an
        expression like $U \leq 4$ would be mistaken for the opening $ of the
