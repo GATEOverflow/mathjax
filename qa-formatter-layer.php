@@ -225,7 +225,7 @@ var _katexQueue = [];
 function katexReady() {
     _patchKatex();
     /* Preprocess only specific content areas that may have multiline LaTeX in HTML */
-    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
+    var contentAreas = document.querySelectorAll(".qa-q-view-content, .qa-q-view-content1, .qa-q-item-content, .qa-a-item-content, .qa-c-item-content, .entry-content, .post-content, .qa-form-tall-text");
     /* Run renderMathInElement FIRST so $...$ inline math is consumed before
        _preprocessDisplayMath.  If _preprocess ran first, the closing $ of an
        expression like $U \leq 4$ would be mistaken for the opening $ of the
@@ -311,7 +311,7 @@ typeset(() => {
 	{
 
 		qa_html_theme_base::body_suffix();
-		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list', 'qp-quickedit-page', 'category');
+		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list',  'userlists', 'custom', 'qp-quickedit-page', 'category');
 		if(in_array($this->template, $allowed_templates))
 		{
 			if(qa_opt("qa-mathjax-enable"))
@@ -347,7 +347,7 @@ typeset(() => {
 	{
 
 		qa_html_theme_base::head_custom();
-		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list', 'qp-quickedit-page');
+		$allowed_templates = array("question", "questions", "blog", "blogs", "qp-quickeditcat-page", "revisions", "ask", "activity", "tag", "user-activity", "user-questions", "user-answers", "unanswered", "search", "qa", "admin", "home", 'user-list', 'userlists', 'custom', 'qp-quickedit-page');
 		if(in_array($this->template, $allowed_templates))
 		{
 		if(qa_opt("qa-ckepreview-enable") && qa_opt("qa-prettify-enable"))
